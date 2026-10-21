@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_dark">
@@ -11,7 +12,7 @@
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottomNavigation">
+        android:layout_above="@id/bottomNavDivider">
 
         <!-- ============================================== -->
         <!-- SCREEN 1: HARDWARE & PROCESS MONITOR           -->
@@ -32,19 +33,21 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:paddingHorizontal="20dp"
-                    android:paddingTop="36dp"
-                    android:paddingBottom="24dp">
+                    android:paddingTop="20dp"
+                    android:paddingBottom="36dp">
 
-                    <!-- Header -->
-                    <RelativeLayout
+                    <!-- Header: Title + Segarkan Button (Guaranteed No Overlap) -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="20dp">
+                        android:layout_marginBottom="20dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
+                            android:layout_weight="1"
                             android:orientation="vertical">
 
                             <TextView
@@ -52,33 +55,34 @@
                                 android:layout_height="wrap_content"
                                 android:text="Hardware Monitor"
                                 android:textColor="@color/text_primary"
-                                android:textSize="26sp"
+                                android:textSize="24sp"
                                 android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="One UI 9 • Live Snapdragon &amp; GPU"
+                                android:text="One UI 9 • Snapdragon &amp; Adreno 710"
                                 android:textColor="@color/text_secondary"
-                                android:textSize="13sp" />
+                                android:textSize="12sp" />
                         </LinearLayout>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnRefresh"
                             android:layout_width="wrap_content"
                             android:layout_height="38dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:backgroundTint="#203B82F6"
+                            android:layout_marginStart="12dp"
+                            android:backgroundTint="#2038BDF8"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
                             android:text="Segarkan"
-                            android:textColor="@color/accent_blue"
+                            android:textColor="#38BDF8"
                             android:textSize="12sp"
                             android:textStyle="bold"
                             app:cornerRadius="19dp"
-                            app:strokeColor="@color/accent_blue"
+                            app:strokeColor="#38BDF8"
                             app:strokeWidth="1dp" />
-                    </RelativeLayout>
+                    </LinearLayout>
 
                     <!-- Card 1: Suhu & Baterai Ringkas -->
                     <LinearLayout
@@ -89,13 +93,17 @@
                         android:orientation="vertical"
                         android:padding="20dp">
 
-                        <RelativeLayout
+                        <!-- Header Row -->
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:text="STATUS DAYA &amp; SUHU"
                                 android:textColor="@color/text_muted"
                                 android:textSize="11sp"
@@ -105,7 +113,6 @@
                                 android:id="@+id/tvTempBadge"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
                                 android:background="@drawable/pill_bg"
                                 android:paddingHorizontal="10dp"
                                 android:paddingVertical="4dp"
@@ -113,41 +120,80 @@
                                 android:textColor="@color/temp_cool"
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
-                        </RelativeLayout>
+                        </LinearLayout>
 
+                        <!-- Metric Row (Split Left & Right) -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:gravity="bottom"
+                            android:layout_marginTop="16dp"
+                            android:gravity="center_vertical"
                             android:orientation="horizontal">
 
-                            <TextView
-                                android:id="@+id/tvBatteryTemp"
-                                android:layout_width="wrap_content"
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="37.0°C"
-                                android:textColor="@color/temp_cool"
-                                android:textSize="36sp"
-                                android:textStyle="bold" />
+                                android:layout_weight="1"
+                                android:orientation="vertical">
 
-                            <TextView
-                                android:id="@+id/tvBatteryLevel"
-                                android:layout_width="wrap_content"
+                                <TextView
+                                    android:id="@+id/tvBatteryTemp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="36.9°C"
+                                    android:textColor="@color/temp_cool"
+                                    android:textSize="32sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="Suhu Baterai"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="40dp"
+                                android:layout_marginHorizontal="12dp"
+                                android:background="@color/card_stroke" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_marginBottom="6dp"
-                                android:text="•  60% Tersisa"
-                                android:textColor="@color/text_primary"
-                                android:textSize="16sp" />
+                                android:layout_weight="1.2"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/tvBatteryLevel"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
+                                    android:text="71% Tersisa"
+                                    android:textColor="@color/text_primary"
+                                    android:textSize="26sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="Kapasitas Baterai"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
                         </LinearLayout>
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:layout_marginVertical="14dp"
+                            android:layout_marginVertical="16dp"
                             android:background="@color/card_stroke" />
 
+                        <!-- 3 Subcards in Equal Width -->
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -157,8 +203,11 @@
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
                                 android:layout_weight="1"
-                                android:orientation="vertical">
+                                android:background="@drawable/subcard_bg"
+                                android:orientation="vertical"
+                                android:padding="10dp">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -171,18 +220,23 @@
                                     android:id="@+id/tvBatteryCurrent"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="3dp"
-                                    android:text="+1702 mA"
+                                    android:layout_marginTop="4dp"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
+                                    android:text="+1325 mA"
                                     android:textColor="@color/text_primary"
-                                    android:textSize="14sp"
+                                    android:textSize="13sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
 
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="3dp"
                                 android:layout_weight="1"
-                                android:orientation="vertical">
+                                android:background="@drawable/subcard_bg"
+                                android:orientation="vertical"
+                                android:padding="10dp">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -195,18 +249,23 @@
                                     android:id="@+id/tvBatteryVoltage"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="3dp"
-                                    android:text="4.07 V"
+                                    android:layout_marginTop="4dp"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
+                                    android:text="4.19 V"
                                     android:textColor="@color/text_primary"
-                                    android:textSize="14sp"
+                                    android:textSize="13sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
 
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_marginStart="6dp"
                                 android:layout_weight="1"
-                                android:orientation="vertical">
+                                android:background="@drawable/subcard_bg"
+                                android:orientation="vertical"
+                                android:padding="10dp">
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -219,10 +278,12 @@
                                     android:id="@+id/tvBatteryHealth"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="3dp"
+                                    android:layout_marginTop="4dp"
+                                    android:ellipsize="end"
+                                    android:maxLines="1"
                                     android:text="Baik (99%)"
                                     android:textColor="@color/temp_cool"
-                                    android:textSize="14sp"
+                                    android:textSize="13sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
                         </LinearLayout>
@@ -237,13 +298,16 @@
                         android:orientation="vertical"
                         android:padding="20dp">
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:text="PROCESSOR CPU (8-CORE)"
                                 android:textColor="@color/text_muted"
                                 android:textSize="11sp"
@@ -253,33 +317,41 @@
                                 android:id="@+id/tvCpuPercent"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
                                 android:text="28% Digunakan"
                                 android:textColor="#0EA5E9"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
-                        </RelativeLayout>
+                        </LinearLayout>
 
                         <ProgressBar
                             android:id="@+id/pbCpu"
                             style="@android:style/Widget.ProgressBar.Horizontal"
                             android:layout_width="match_parent"
                             android:layout_height="10dp"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="14dp"
                             android:max="100"
                             android:progress="28"
                             android:progressDrawable="@drawable/progress_bar_cpu" />
 
-                        <TextView
-                            android:id="@+id/tvCpuCoresStatus"
+                        <!-- Core Cluster Status Banner -->
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:lineSpacingExtra="4dp"
-                            android:text="C0-3: 1.8 GHz • C4-5: 2.4 GHz • C6-7: 1.6 GHz"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp"
-                            android:typeface="monospace" />
+                            android:layout_marginTop="14dp"
+                            android:background="@drawable/subcard_bg"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:id="@+id/tvCpuCoresStatus"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:lineSpacingExtra="3dp"
+                                android:text="C0-3: 1.8 GHz (E-Cores) • C4-7: 2.4 GHz (P-Cores)"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
                     </LinearLayout>
 
                     <!-- Card 3: GPU Adreno 710 -->
@@ -291,13 +363,16 @@
                         android:orientation="vertical"
                         android:padding="20dp">
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:text="GPU GRAFIS (QUALCOMM)"
                                 android:textColor="@color/text_muted"
                                 android:textSize="11sp"
@@ -307,12 +382,11 @@
                                 android:id="@+id/tvGpuPercent"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
                                 android:text="15% Digunakan"
-                                android:textColor="#8B5CF6"
+                                android:textColor="#A855F7"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
-                        </RelativeLayout>
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/tvGpuModel"
@@ -337,7 +411,7 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="14dp"
                             android:orientation="horizontal">
 
                             <TextView
@@ -347,7 +421,8 @@
                                 android:layout_weight="1"
                                 android:text="Clock: 345 MHz"
                                 android:textColor="@color/text_secondary"
-                                android:textSize="12sp" />
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:id="@+id/tvGpuTemp"
@@ -355,7 +430,8 @@
                                 android:layout_height="wrap_content"
                                 android:text="Suhu GPU: 42.9°C"
                                 android:textColor="@color/text_secondary"
-                                android:textSize="12sp" />
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -368,13 +444,16 @@
                         android:orientation="vertical"
                         android:padding="20dp">
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:text="MEMORI RAM"
                                 android:textColor="@color/text_muted"
                                 android:textSize="11sp"
@@ -384,12 +463,11 @@
                                 android:id="@+id/tvRamPercent"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
                                 android:text="54% Digunakan"
-                                android:textColor="@color/accent_blue"
-                                android:textSize="12sp"
+                                android:textColor="#38BDF8"
+                                android:textSize="13sp"
                                 android:textStyle="bold" />
-                        </RelativeLayout>
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/tvRamUsed"
@@ -425,9 +503,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
                             android:layout_marginTop="16dp"
-                            android:backgroundTint="@color/accent_blue"
-                            android:text="Bersihkan Memori RAM Sekarang"
-                            android:textColor="@color/white"
+                            android:backgroundTint="#38BDF8"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:text="⚡ Bersihkan Memori RAM Sekarang"
+                            android:textColor="#0C0D12"
                             android:textSize="13sp"
                             android:textStyle="bold"
                             app:cornerRadius="14dp" />
@@ -441,16 +521,19 @@
                         android:orientation="vertical"
                         android:padding="20dp">
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="12dp">
+                            android:layout_marginBottom="14dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
                             <TextView
                                 android:id="@+id/tvProcessHeader"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="APLIKASI MENGGUNAKAN RESOURCE"
+                                android:layout_weight="1"
+                                android:text="APLIKASI AKTIF MENGGUNAKAN RAM"
                                 android:textColor="@color/text_muted"
                                 android:textSize="11sp"
                                 android:textStyle="bold" />
@@ -458,11 +541,11 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:text="Ketuk untuk Force Stop"
-                                android:textColor="@color/accent_blue"
-                                android:textSize="11sp" />
-                        </RelativeLayout>
+                                android:text="Kelola"
+                                android:textColor="#38BDF8"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvProcesses"
@@ -492,15 +575,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingHorizontal="20dp"
-                android:paddingTop="36dp"
-                android:paddingBottom="24dp">
+                android:paddingTop="20dp"
+                android:paddingBottom="36dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Battery Guardian"
                     android:textColor="@color/text_primary"
-                    android:textSize="26sp"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -509,7 +592,7 @@
                     android:layout_marginTop="2dp"
                     android:text="Proteksi Umur Sel &amp; Alarm 80%"
                     android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
 
                 <!-- Battery Large Metric Card -->
                 <LinearLayout
@@ -526,7 +609,7 @@
                         android:id="@+id/tvGuardianLevel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="60%"
+                        android:text="71%"
                         android:textColor="@color/text_primary"
                         android:textSize="54sp"
                         android:textStyle="bold" />
@@ -535,9 +618,9 @@
                         android:id="@+id/tvGuardianWattage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="6dp"
                         android:text="⚡ Mengisi Daya: ~15.2 Watt"
-                        android:textColor="@color/accent_blue"
+                        android:textColor="#38BDF8"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -545,10 +628,10 @@
                         android:id="@+id/tvGuardianSoh"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="12dp"
                         android:background="@drawable/pill_bg"
                         android:paddingHorizontal="14dp"
-                        android:paddingVertical="5dp"
+                        android:paddingVertical="6dp"
                         android:text="Kesehatan Baterai Asli: 99% (Optimal)"
                         android:textColor="@color/temp_cool"
                         android:textSize="12sp"
@@ -564,14 +647,17 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
+                            android:layout_marginEnd="16dp"
+                            android:layout_weight="1"
                             android:orientation="vertical">
 
                             <TextView
@@ -595,15 +681,14 @@
                             android:id="@+id/swChargeProtect"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
                             android:checked="true" />
-                    </RelativeLayout>
+                    </LinearLayout>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:lineSpacingExtra="2dp"
+                        android:lineSpacingExtra="3dp"
                         android:text="Menghentikan pengisian pada 80% dapat memperpanjang umur siklus baterai Lithium-ion hingga 3x lipat."
                         android:textColor="@color/text_muted"
                         android:textSize="11sp" />
@@ -618,14 +703,17 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <RelativeLayout
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
+                            android:layout_marginEnd="16dp"
+                            android:layout_weight="1"
                             android:orientation="vertical">
 
                             <TextView
@@ -649,9 +737,8 @@
                             android:id="@+id/swThermalAlarm"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
                             android:checked="true" />
-                    </RelativeLayout>
+                    </LinearLayout>
                 </LinearLayout>
 
                 <!-- Battery Settings Shortcut -->
@@ -661,6 +748,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:backgroundTint="#161824"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
                     android:text="⚙️ Buka Pengaturan Baterai Samsung"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp"
@@ -680,7 +769,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:paddingHorizontal="20dp"
-            android:paddingTop="36dp"
+            android:paddingTop="20dp"
             android:visibility="gone">
 
             <TextView
@@ -688,7 +777,7 @@
                 android:layout_height="wrap_content"
                 android:text="One UI Debloater"
                 android:textColor="@color/text_primary"
-                android:textSize="26sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -698,13 +787,13 @@
                 android:layout_marginTop="2dp"
                 android:text="Bekukan Bloatware &amp; Hemat RAM"
                 android:textColor="@color/text_secondary"
-                android:textSize="13sp" />
+                android:textSize="12sp" />
 
             <!-- Info Banner -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="16dp"
+                android:layout_marginVertical="14dp"
                 android:background="@drawable/card_bg"
                 android:orientation="vertical"
                 android:padding="16dp">
@@ -753,15 +842,15 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingHorizontal="20dp"
-                android:paddingTop="36dp"
-                android:paddingBottom="24dp">
+                android:paddingTop="20dp"
+                android:paddingBottom="36dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Pembersih Bersih"
                     android:textColor="@color/text_primary"
-                    android:textSize="26sp"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -770,9 +859,9 @@
                     android:layout_marginTop="2dp"
                     android:text="0% Iklan • Murni Menghapus Sampah"
                     android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
 
-                <!-- Big Cleaner Circular Card -->
+                <!-- Big Cleaner Hero Card -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -781,7 +870,7 @@
                     android:background="@drawable/card_bg"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="32dp">
+                    android:padding="28dp">
 
                     <TextView
                         android:id="@+id/tvJunkSize"
@@ -804,14 +893,16 @@
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCleanJunkNow"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="50dp"
                         android:layout_marginTop="20dp"
-                        android:backgroundTint="@color/accent_blue"
+                        android:backgroundTint="#38BDF8"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
                         android:text="Bersihkan Sampah Sekarang"
-                        android:textColor="@color/white"
+                        android:textColor="#0C0D12"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        app:cornerRadius="16dp" />
+                        app:cornerRadius="14dp" />
                 </LinearLayout>
 
                 <!-- Breakdown of Junk -->
@@ -835,6 +926,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="14dp"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -858,7 +950,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -882,7 +975,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -910,6 +1004,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:backgroundTint="#161824"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
                     android:text="⚙️ Buka Perawatan Perangkat Samsung"
                     android:textColor="@color/text_secondary"
                     android:textSize="13sp"
@@ -922,19 +1018,30 @@
 
     </FrameLayout>
 
+    <!-- Top Border Line for Sleek Bottom Navigation -->
+    <View
+        android:id="@+id/bottomNavDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/bottomNavigation"
+        android:background="#1E2336" />
+
     <!-- ============================================== -->
     <!-- SLEEK ONE UI BOTTOM NAVIGATION BAR             -->
     <!-- ============================================== -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="68dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#10121A"
-        app:elevation="12dp"
+        android:background="#10131E"
+        app:elevation="8dp"
         app:itemIconSize="22dp"
-        app:itemIconTint="@color/accent_blue"
-        app:itemTextColor="@color/text_secondary"
+        app:itemIconTint="@color/nav_item_selector"
+        app:itemTextColor="@color/nav_item_selector"
+        app:itemTextAppearanceActive="@style/OneUINavTextActive"
+        app:itemTextAppearanceInactive="@style/OneUINavTextInactive"
+        app:itemActiveIndicatorStyle="@null"
         app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_nav_menu" />
 

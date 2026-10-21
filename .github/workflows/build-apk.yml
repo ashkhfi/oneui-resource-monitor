@@ -44,17 +44,16 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release create v2.0.0 release-apk/OneUI9-Resource-Monitor.apk \
-          --title "Galaxy Suite One UI Optimizer & Monitor v2.0.0" \
-          --notes "### Galaxy Suite: Flagship One UI 9 Optimizer & Monitor v2.0.0
+        gh release create v2.1.0 release-apk/OneUI9-Resource-Monitor.apk \
+          --clobber \
+          --title "Galaxy Suite One UI Optimizer & Monitor v2.1.0" \
+          --notes "### Galaxy Suite: Flagship One UI 9 Optimizer & Monitor v2.1.0
           
           A premier, ad-free, all-in-one utility suite crafted specifically for Samsung Galaxy devices running One UI 9 / Android 17.
           
-          #### 🌟 4 Dedicated Menus (Bottom Navigation):
-          1. **📊 Hardware Monitor**: Real-time Snapdragon 8-Core frequencies & load, Adreno 710 GPU status, RAM allocation, and active process breakdown.
-          2. **🔋 Battery Guardian**: 80% charge limiter alarm, thermal overheat protection, live wattage (W) and current (mA), 99% SOH tracking.
-          3. **❄️ One UI Debloater**: Visual app freezer for Facebook, Microsoft, and Samsung bloatware with real-time RAM savings indicators.
-          4. **🧹 Storage Cleaner**: Zero-ad deep cleaner for cache, empty folders, and temporary junk files.
-          
-          - **UI/UX**: Strictly polished One UI 9 design, AMOLED dark theme, zero overlapping components, 100% free forever." \
+          #### 🎨 Major UI/UX Overhaul & Polish:
+          - **One UI 9 Native Navigation Bar**: Fixed bottom navigation styling with native tint states, eliminated cramped/overlapping labels, and aligned seamlessly above system gesture navigation bar with full window insets support.
+          - **Zero Component Overlaps**: Fixed all header, badge, button, and switch layouts to guarantee 100% responsive spacing on all screen sizes and font scales.
+          - **Modular Dual-Cluster Snapdragon Visualizer**: Clear visual grouping for Efficiency Cores (C0-3) and Performance Cores (C4-7).
+          - **100% Ad-Free, Lightweight, and Zero Trackers**." \
           --target main || true

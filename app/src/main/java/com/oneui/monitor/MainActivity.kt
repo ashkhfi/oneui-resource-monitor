@@ -12,6 +12,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -85,6 +87,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        applyWindowInsets()
         initViews()
         setupBottomNavigation()
         setupListeners()
@@ -101,6 +104,21 @@ class MainActivity : AppCompatActivity() {
         refreshMonitorStats()
         refreshBatteryGuardian()
         refreshDebloater()
+    }
+
+    private fun applyWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rootLayout)) { _, insets ->
+            val statusBarInset = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBarInset = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // Pad top so status bar (clock, battery) never overlaps header
+            findViewById<View>(R.id.fragmentContainer)?.setPadding(0, statusBarInset.top, 0, 0)
+
+            // Pad bottom navigation so it sits nicely above the system gesture bar
+            findViewById<BottomNavigationView>(R.id.bottomNavigation)?.setPadding(0, 4, 0, navBarInset.bottom + 4)
+
+            insets
+        }
     }
 
     private fun initViews() {
@@ -286,7 +304,7 @@ class MainActivity : AppCompatActivity() {
         val battery = SystemStatsHelper.getBatteryStats(this)
         val tempFormatted = String.format(Locale.US, "%.1f°C", battery.temperatureC)
         tvBatteryTemp.text = tempFormatted
-        tvBatteryLevel.text = "•  ${battery.level}% (${battery.statusText})"
+        tvBatteryLevel.text = "${battery.level}% (${battery.statusText})"
 
         val coolColor = ContextCompat.getColor(this, R.color.temp_cool)
         val warmColor = ContextCompat.getColor(this, R.color.temp_warm)
@@ -320,13 +338,9 @@ class MainActivity : AppCompatActivity() {
         tvCpuPercent.text = "${cpu.overallLoadPercent}% Digunakan"
         pbCpu.progress = cpu.overallLoadPercent
 
-        val coreSummary = StringBuilder()
-        cpu.cores.forEachIndexed { idx, core ->
-            val ghz = core.curMhz.toFloat() / 1000f
-            coreSummary.append(String.format(Locale.US, "C%d: %.1fGHz ", idx, ghz))
-            if (idx == 3) coreSummary.append("\n")
-        }
-        tvCpuCoresStatus.text = coreSummary.toString().trim()
+        val effCores = cpu.cores.take(4).mapIndexed { i, c -> "C$i: ${String.format(Locale.US, "%.1f", c.curMhz / 1000f)}G" }.joinToString("  ")
+        val perfCores = cpu.cores.drop(4).take(4).mapIndexed { i, c -> "C${i+4}: ${String.format(Locale.US, "%.1f", c.curMhz / 1000f)}G" }.joinToString("  ")
+        tvCpuCoresStatus.text = "⚡ Little Cores (E): $effCores\n🚀 Prime Cores (P): $perfCores"
 
         // 3. GPU
         val gpu = SystemStatsHelper.getGpuStats()

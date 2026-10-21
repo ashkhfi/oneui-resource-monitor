@@ -6,49 +6,63 @@
     android:background="@drawable/card_bg"
     android:clickable="true"
     android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <RelativeLayout
+    <!-- Top Row: App Name & Status Badge -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tvDebloatName"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:text="Facebook Services"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvDebloatName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Facebook Services"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDebloatPackage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="com.facebook.services"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvDebloatStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:background="@drawable/pill_bg"
             android:paddingHorizontal="10dp"
-            android:paddingVertical="3dp"
+            android:paddingVertical="4dp"
             android:text="❄️ Dibekukan"
             android:textColor="@color/temp_cool"
             android:textSize="11sp"
             android:textStyle="bold" />
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/tvDebloatPackage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:text="com.facebook.services"
-        android:textColor="@color/text_muted"
-        android:textSize="11sp" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvDebloatDesc"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:lineSpacingExtra="2dp"
@@ -62,14 +76,18 @@
         android:layout_marginVertical="10dp"
         android:background="@color/card_stroke" />
 
-    <RelativeLayout
+    <!-- Bottom Action Row -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/tvDebloatRam"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Estimasi RAM: +45 MB"
             android:textColor="#38BDF8"
             android:textSize="11sp"
@@ -78,11 +96,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:text="Kelola di Sistem ›"
-            android:textColor="@color/accent_blue"
+            android:textColor="#38BDF8"
             android:textSize="11sp"
             android:textStyle="bold" />
-    </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>
