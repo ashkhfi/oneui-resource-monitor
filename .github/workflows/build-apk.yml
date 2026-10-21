@@ -1,11 +1,12 @@
-name: Build APK
+name: Build and Release APK
 
 on:
   push:
-    branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
+    branches: [ "main" ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -23,13 +24,33 @@ jobs:
         cache: gradle
 
     - name: Grant execute permission for gradlew
-      run: chmod +x gradlew || true
+      run: chmod +x gradlew
 
     - name: Build Debug APK
       run: ./gradlew assembleDebug --stacktrace
 
+    - name: Rename APK
+      run: |
+        mkdir -p release-apk
+        cp app/build/outputs/apk/debug/app-debug.apk release-apk/OneUI9-Resource-Monitor.apk
+
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Galaxy-Resource-Monitor-APK
-        path: app/build/outputs/apk/debug/*.apk
+        name: OneUI9-Resource-Monitor-APK
+        path: release-apk/OneUI9-Resource-Monitor.apk
+
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh release create v1.0.0 release-apk/OneUI9-Resource-Monitor.apk \
+          --title "Galaxy One UI 9 Resource Monitor v1.0.0" \
+          --notes "### Galaxy One UI 9 Native Resource & Hardware Monitor
+          
+          - **Thermal & Battery**: Real-time decimal temperature (°C), live current (mA), voltage, health.
+          - **RAM**: Memory usage & available space.
+          - **Storage**: Internal storage stats.
+          - **SoC & System**: Android 17 & One UI 9 specs.
+          - **Pure Native**: 100% Free, Zero Ads, Zero Background Drain." \
+          --target main || true
