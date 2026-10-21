@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_monitor"
+        android:icon="@drawable/ic_nav_monitor"
+        android:title="Monitor" />
+    <item
+        android:id="@+id/nav_battery"
+        android:icon="@drawable/ic_nav_battery"
+        android:title="Baterai" />
+    <item
+        android:id="@+id/nav_debloater"
+        android:icon="@drawable/ic_nav_debloater"
+        android:title="Debloater" />
+    <item
+        android:id="@+id/nav_cleaner"
+        android:icon="@drawable/ic_nav_cleaner"
+        android:title="Pembersih" />
+</menu>
