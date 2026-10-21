@@ -1,16 +1,11 @@
 package com.oneui.monitor
 
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -25,15 +20,12 @@ import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var tabDashboard: TextView
-    private lateinit var tabTaskManager: TextView
     private lateinit var swipeRefresh: SwipeRefreshLayout
-    private lateinit var layoutTaskManager: View
-
     private lateinit var btnRefresh: MaterialButton
     private lateinit var btnCleanMemory: MaterialButton
+    private lateinit var btnOpenRunningServices: MaterialButton
 
-    // Dashboard views
+    // Battery / Thermal views
     private lateinit var tvBatteryTemp: TextView
     private lateinit var tvBatteryLevel: TextView
     private lateinit var tvTempBadge: TextView
@@ -41,27 +33,28 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvBatteryVoltage: TextView
     private lateinit var tvBatteryHealth: TextView
 
+    // CPU views
+    private lateinit var tvCpuPercent: TextView
+    private lateinit var pbCpu: ProgressBar
+    private lateinit var tvCpuCoresStatus: TextView
+
+    // Process Breakdown
+    private lateinit var tvProcessHeader: TextView
+    private lateinit var rvProcesses: RecyclerView
+    private lateinit var processAdapter: ProcessAdapter
+
+    // GPU views
+    private lateinit var tvGpuPercent: TextView
+    private lateinit var tvGpuModel: TextView
+    private lateinit var pbGpu: ProgressBar
+    private lateinit var tvGpuClock: TextView
+    private lateinit var tvGpuTemp: TextView
+
+    // RAM views
     private lateinit var tvRamUsed: TextView
     private lateinit var tvRamPercent: TextView
     private lateinit var tvRamAvail: TextView
     private lateinit var pbRam: ProgressBar
-
-    private lateinit var tvStorageUsed: TextView
-    private lateinit var tvStoragePercent: TextView
-    private lateinit var tvStorageFree: TextView
-    private lateinit var pbStorage: ProgressBar
-
-    private lateinit var tvDeviceModel: TextView
-    private lateinit var tvCpuCores: TextView
-    private lateinit var tvOsVersion: TextView
-    private lateinit var tvUptime: TextView
-
-    // Task Manager views
-    private lateinit var tvProcessCount: TextView
-    private lateinit var etSearchProcess: EditText
-    private lateinit var rvProcesses: RecyclerView
-    private lateinit var processAdapter: ProcessAdapter
-    private var allProcesses = listOf<ProcessModel>()
 
     private val executor = Executors.newSingleThreadExecutor()
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -82,13 +75,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        tabDashboard = findViewById(R.id.tabDashboard)
-        tabTaskManager = findViewById(R.id.tabTaskManager)
         swipeRefresh = findViewById(R.id.swipeRefresh)
-        layoutTaskManager = findViewById(R.id.layoutTaskManager)
-
         btnRefresh = findViewById(R.id.btnRefresh)
         btnCleanMemory = findViewById(R.id.btnCleanMemory)
+        btnOpenRunningServices = findViewById(R.id.btnOpenRunningServices)
 
         tvBatteryTemp = findViewById(R.id.tvBatteryTemp)
         tvBatteryLevel = findViewById(R.id.tvBatteryLevel)
@@ -97,37 +87,28 @@ class MainActivity : AppCompatActivity() {
         tvBatteryVoltage = findViewById(R.id.tvBatteryVoltage)
         tvBatteryHealth = findViewById(R.id.tvBatteryHealth)
 
+        tvCpuPercent = findViewById(R.id.tvCpuPercent)
+        pbCpu = findViewById(R.id.pbCpu)
+        tvCpuCoresStatus = findViewById(R.id.tvCpuCoresStatus)
+
+        tvProcessHeader = findViewById(R.id.tvProcessHeader)
+        rvProcesses = findViewById(R.id.rvProcesses)
+
+        tvGpuPercent = findViewById(R.id.tvGpuPercent)
+        tvGpuModel = findViewById(R.id.tvGpuModel)
+        pbGpu = findViewById(R.id.pbGpu)
+        tvGpuClock = findViewById(R.id.tvGpuClock)
+        tvGpuTemp = findViewById(R.id.tvGpuTemp)
+
         tvRamUsed = findViewById(R.id.tvRamUsed)
         tvRamPercent = findViewById(R.id.tvRamPercent)
         tvRamAvail = findViewById(R.id.tvRamAvail)
         pbRam = findViewById(R.id.pbRam)
 
-        tvStorageUsed = findViewById(R.id.tvStorageUsed)
-        tvStoragePercent = findViewById(R.id.tvStoragePercent)
-        tvStorageFree = findViewById(R.id.tvStorageFree)
-        pbStorage = findViewById(R.id.pbStorage)
-
-        tvDeviceModel = findViewById(R.id.tvDeviceModel)
-        tvCpuCores = findViewById(R.id.tvCpuCores)
-        tvOsVersion = findViewById(R.id.tvOsVersion)
-        tvUptime = findViewById(R.id.tvUptime)
-
-        tvProcessCount = findViewById(R.id.tvProcessCount)
-        etSearchProcess = findViewById(R.id.etSearchProcess)
-        rvProcesses = findViewById(R.id.rvProcesses)
-
         swipeRefresh.setColorSchemeColors(ContextCompat.getColor(this, R.color.accent_blue))
     }
 
     private fun setupListeners() {
-        tabDashboard.setOnClickListener {
-            switchTab(isDashboard = true)
-        }
-
-        tabTaskManager.setOnClickListener {
-            switchTab(isDashboard = false)
-        }
-
         swipeRefresh.setOnRefreshListener {
             refreshAllStats()
             mainHandler.postDelayed({
@@ -137,7 +118,7 @@ class MainActivity : AppCompatActivity() {
 
         btnRefresh.setOnClickListener {
             refreshAllStats()
-            Toast.makeText(this, "Data berhasil diperbarui", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Data hardware diperbarui", Toast.LENGTH_SHORT).show()
         }
 
         btnCleanMemory.setOnClickListener {
@@ -149,42 +130,14 @@ class MainActivity : AppCompatActivity() {
             }, 400)
         }
 
-        etSearchProcess.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                filterProcesses(s?.toString() ?: "")
+        btnOpenRunningServices.setOnClickListener {
+            try {
+                val intent = Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+            } catch (_: Exception) {
+                Toast.makeText(this, "Buka Opsi Pengembang di Pengaturan HP", Toast.LENGTH_SHORT).show()
             }
-            override fun afterTextChanged(s: Editable?) {}
-        })
-    }
-
-    private fun switchTab(isDashboard: Boolean) {
-        val activeBg = ContextCompat.getDrawable(this, R.drawable.pill_bg)
-        val blueColor = ContextCompat.getColor(this, R.color.accent_blue)
-        val whiteColor = ContextCompat.getColor(this, R.color.white)
-        val mutedColor = ContextCompat.getColor(this, R.color.text_secondary)
-
-        if (isDashboard) {
-            tabDashboard.background = activeBg
-            tabDashboard.backgroundTintList = ColorStateList.valueOf(blueColor)
-            tabDashboard.setTextColor(whiteColor)
-
-            tabTaskManager.background = null
-            tabTaskManager.setTextColor(mutedColor)
-
-            swipeRefresh.visibility = View.VISIBLE
-            layoutTaskManager.visibility = View.GONE
-        } else {
-            tabTaskManager.background = activeBg
-            tabTaskManager.backgroundTintList = ColorStateList.valueOf(blueColor)
-            tabTaskManager.setTextColor(whiteColor)
-
-            tabDashboard.background = null
-            tabDashboard.setTextColor(mutedColor)
-
-            swipeRefresh.visibility = View.GONE
-            layoutTaskManager.visibility = View.VISIBLE
-            loadProcessesAsync()
         }
     }
 
@@ -208,27 +161,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun filterProcesses(query: String) {
-        if (query.isEmpty()) {
-            processAdapter.updateList(allProcesses)
-            tvProcessCount.text = "Proses Aktif (${allProcesses.size})"
-        } else {
-            val filtered = allProcesses.filter {
-                it.appName.contains(query, ignoreCase = true) ||
-                it.packageName.contains(query, ignoreCase = true)
-            }
-            processAdapter.updateList(filtered)
-            tvProcessCount.text = "Ditemukan (${filtered.size})"
-        }
-    }
-
     private fun loadProcessesAsync() {
         executor.execute {
             val list = ProcessHelper.getRunningProcesses(this@MainActivity)
             mainHandler.post {
-                allProcesses = list
-                val currentFilter = etSearchProcess.text?.toString() ?: ""
-                filterProcesses(currentFilter)
+                val topList = list.take(15)
+                processAdapter.updateList(topList)
+                tvProcessHeader.text = "APLIKASI MENGGUNAKAN RESOURCE (${topList.size} PROSES)"
             }
         }
     }
@@ -267,28 +206,35 @@ class MainActivity : AppCompatActivity() {
         tvBatteryVoltage.text = String.format(Locale.US, "%.2f V", battery.voltageV)
         tvBatteryHealth.text = battery.healthText
 
-        // 2. RAM Memory
+        // 2. CPU
+        val cpu = SystemStatsHelper.getCpuStats()
+        tvCpuPercent.text = "${cpu.overallLoadPercent}% Digunakan"
+        pbCpu.progress = cpu.overallLoadPercent
+
+        val coreSummary = StringBuilder()
+        cpu.cores.forEachIndexed { idx, core ->
+            val ghz = core.curMhz.toFloat() / 1000f
+            coreSummary.append(String.format(Locale.US, "C%d: %.1fGHz ", idx, ghz))
+            if (idx == 3) coreSummary.append("\n")
+        }
+        tvCpuCoresStatus.text = coreSummary.toString().trim()
+
+        // 3. GPU
+        val gpu = SystemStatsHelper.getGpuStats()
+        tvGpuModel.text = gpu.model
+        tvGpuPercent.text = "${gpu.busyPercent}% Digunakan"
+        pbGpu.progress = gpu.busyPercent
+        tvGpuClock.text = "Clock: ${gpu.clockMhz} MHz"
+        tvGpuTemp.text = String.format(Locale.US, "Suhu GPU: %.1f°C", gpu.tempC)
+
+        // 4. RAM
         val ram = SystemStatsHelper.getRamStats(this)
         tvRamUsed.text = "${ram.formattedUsed} / ${ram.formattedTotal}"
         tvRamPercent.text = "${ram.usedPercent}% Digunakan"
         tvRamAvail.text = "${ram.formattedAvail} Memori Tersedia"
         pbRam.progress = ram.usedPercent
 
-        // 3. Storage
-        val storage = SystemStatsHelper.getStorageStats()
-        tvStorageUsed.text = "${storage.formattedUsed} / ${storage.formattedTotal}"
-        tvStoragePercent.text = "${storage.usedPercent}% Digunakan"
-        tvStorageFree.text = "${storage.formattedFree} Ruang Kosong"
-        pbStorage.progress = storage.usedPercent
-
-        // 4. System Specs
-        val sys = SystemStatsHelper.getSystemStats()
-        tvDeviceModel.text = sys.deviceModel
-        tvCpuCores.text = "${sys.cpuCores} Core (${sys.architecture})"
-        tvOsVersion.text = "${sys.oneUiVersion} • ${sys.androidVersion}"
-        tvUptime.text = sys.uptimeFormatted
-
-        // Also refresh processes
+        // 5. Active Processes
         loadProcessesAsync()
     }
 }

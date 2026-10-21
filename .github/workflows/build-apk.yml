@@ -44,13 +44,15 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release create v1.1.0 release-apk/OneUI9-Resource-Monitor.apk \
-          --title "Galaxy One UI 9 Resource Monitor & Task Manager v1.1.0" \
-          --notes "### Galaxy One UI 9 Native Resource Monitor & Task Manager v1.1.0
+        gh release create v1.2.0 release-apk/OneUI9-Resource-Monitor.apk \
+          --title "Galaxy One UI 9 Resource Monitor v1.2.0" \
+          --notes "### Galaxy One UI 9 Native Single-Dashboard v1.2.0
           
-          - **New Feature: PC-Style Task Manager**: View currently active processes and running apps.
-          - **Process Management**: Tap any process to view memory usage or Force Stop.
-          - **Real-time Filter & Search**: Search active apps by name or package.
-          - **Hardware Dashboard**: Live decimal battery temp (°C), mA current, RAM, and Storage.
-          - **Pure Native**: 100% Free, Zero Ads, Zero Background Drain." \
+          - **Unified 1-Page Dashboard**: Removed separate Task Manager tabs for seamless one-glance monitoring.
+          - **CPU Load & 8-Core Frequencies**: Real-time Snapdragon 8-core clock & load %.
+          - **GPU Adreno 710 Monitor**: Real-time GPU load %, Clock MHz, and GPU temperature.
+          - **Active Process Breakdown**: Live breakdown of top applications consuming resources.
+          - **Battery & Thermal**: Decimal temperature (°C), live current (mA), voltage.
+          - **RAM & Memory**: RAM allocation gauge + 1-tap memory cleaner.
+          - **Quick System Shortcut**: 1-tap shortcut to Samsung's native Running Services screen." \
           --target main || true

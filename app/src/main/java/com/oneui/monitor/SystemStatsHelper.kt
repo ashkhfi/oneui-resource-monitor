@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Environment
 import android.os.StatFs
 import android.os.SystemClock
+import java.io.File
 import java.util.Locale
 import kotlin.math.abs
 
@@ -42,13 +43,29 @@ data class StorageStats(
     val formattedFree: String
 )
 
-data class SystemStats(
-    val cpuCores: Int,
+data class CpuCoreInfo(
+    val coreIndex: Int,
+    val curMhz: Int,
+    val maxMhz: Int,
+    val loadPercent: Int
+)
+
+data class CpuStats(
+    val overallLoadPercent: Int,
+    val coreCount: Int,
     val architecture: String,
     val deviceModel: String,
     val androidVersion: String,
     val oneUiVersion: String,
-    val uptimeFormatted: String
+    val uptimeFormatted: String,
+    val cores: List<CpuCoreInfo>
+)
+
+data class GpuStats(
+    val model: String,
+    val busyPercent: Int,
+    val clockMhz: Int,
+    val tempC: Float
 )
 
 object SystemStatsHelper {
@@ -90,7 +107,6 @@ object SystemStatsHelper {
 
         val bm = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
         val rawCurrent = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
-        // Convert microamperes to milliamperes if > 10000
         val currentMA = if (abs(rawCurrent) > 10000) rawCurrent / 1000 else rawCurrent
 
         return BatteryStats(
@@ -101,6 +117,105 @@ object SystemStatsHelper {
             statusText = statusText,
             healthText = healthText,
             technology = tech
+        )
+    }
+
+    fun getCpuStats(): CpuStats {
+        val cores = Runtime.getRuntime().availableProcessors()
+        val arch = Build.SUPPORTED_ABIS.firstOrNull() ?: "arm64-v8a"
+        val model = "${Build.MANUFACTURER.replaceFirstChar { it.uppercase() }} ${Build.MODEL}"
+        val androidVer = "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})"
+
+        var oneUi = "One UI"
+        try {
+            val clazz = Class.forName("android.os.SystemProperties")
+            val getMethod = clazz.getMethod("get", String::class.java, String::class.java)
+            val ver = getMethod.invoke(null, "ro.build.version.oneui", "") as String
+            if (ver.isNotEmpty()) {
+                val num = ver.toIntOrNull()
+                if (num != null) {
+                    val major = num / 10000
+                    val minor = (num % 10000) / 100
+                    oneUi = "One UI $major.$minor"
+                }
+            }
+        } catch (_: Exception) {
+            oneUi = "One UI"
+        }
+
+        val uptimeSec = SystemClock.elapsedRealtime() / 1000
+        val hours = uptimeSec / 3600
+        val mins = (uptimeSec % 3600) / 60
+        val uptimeFormatted = "${hours}j ${mins}m"
+
+        // Read core frequencies
+        val coreList = mutableListOf<CpuCoreInfo>()
+        var totalLoadSum = 0
+        var validCoreCount = 0
+
+        for (i in 0 until cores) {
+            val curKHz = readSysfsInt("/sys/devices/system/cpu/cpu$i/cpufreq/scaling_cur_freq")
+            val maxKHz = readSysfsInt("/sys/devices/system/cpu/cpu$i/cpufreq/cpuinfo_max_freq")
+
+            val curMhz = if (curKHz > 0) curKHz / 1000 else 0
+            val maxMhz = if (maxKHz > 0) maxKHz / 1000 else 1800
+
+            val load = if (maxMhz > 0 && curMhz > 0) {
+                ((curMhz.toFloat() / maxMhz.toFloat()) * 100).toInt().coerceIn(0, 100)
+            } else 0
+
+            coreList.add(
+                CpuCoreInfo(
+                    coreIndex = i,
+                    curMhz = curMhz,
+                    maxMhz = maxMhz,
+                    loadPercent = load
+                )
+            )
+
+            if (curMhz > 0) {
+                totalLoadSum += load
+                validCoreCount++
+            }
+        }
+
+        val avgLoad = if (validCoreCount > 0) totalLoadSum / validCoreCount else 25
+
+        return CpuStats(
+            overallLoadPercent = avgLoad,
+            coreCount = cores,
+            architecture = arch,
+            deviceModel = model,
+            androidVersion = androidVer,
+            oneUiVersion = oneUi,
+            uptimeFormatted = uptimeFormatted,
+            cores = coreList
+        )
+    }
+
+    fun getGpuStats(): GpuStats {
+        var model = readSysfsString("/sys/class/kgsl/kgsl-3d0/gpu_model")
+        if (model.isEmpty() || model == "0") {
+            model = "Adreno 710"
+        } else {
+            model = model.replace("v1", "").trim()
+            if (!model.startsWith("Qualcomm", ignoreCase = true)) {
+                model = "Qualcomm $model"
+            }
+        }
+
+        val busyRaw = readSysfsString("/sys/class/kgsl/kgsl-3d0/gpu_busy_percentage")
+        val busyPercent = busyRaw.replace("%", "").trim().toIntOrNull() ?: 0
+
+        val clockMhz = readSysfsInt("/sys/class/kgsl/kgsl-3d0/clock_mhz")
+        val rawTemp = readSysfsInt("/sys/class/kgsl/kgsl-3d0/temp")
+        val tempC = if (rawTemp > 1000) rawTemp / 1000.0f else rawTemp.toFloat()
+
+        return GpuStats(
+            model = model,
+            busyPercent = busyPercent.coerceIn(0, 100),
+            clockMhz = clockMhz,
+            tempC = tempC
         )
     }
 
@@ -147,43 +262,21 @@ object SystemStatsHelper {
         )
     }
 
-    fun getSystemStats(): SystemStats {
-        val cores = Runtime.getRuntime().availableProcessors()
-        val arch = Build.SUPPORTED_ABIS.firstOrNull() ?: "arm64-v8a"
-        val model = "${Build.MANUFACTURER.replaceFirstChar { it.uppercase() }} ${Build.MODEL}"
-        val androidVer = "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})"
-
-        // Read One UI property
-        var oneUi = "One UI"
-        try {
-            val clazz = Class.forName("android.os.SystemProperties")
-            val getMethod = clazz.getMethod("get", String::class.java, String::class.java)
-            val ver = getMethod.invoke(null, "ro.build.version.oneui", "") as String
-            if (ver.isNotEmpty()) {
-                val num = ver.toIntOrNull()
-                if (num != null) {
-                    val major = num / 10000
-                    val minor = (num % 10000) / 100
-                    oneUi = "One UI $major.$minor"
-                }
-            }
+    private fun readSysfsString(path: String): String {
+        return try {
+            val file = File(path)
+            if (file.exists() && file.canRead()) {
+                file.readText().trim()
+            } else ""
         } catch (_: Exception) {
-            oneUi = "One UI"
+            ""
         }
+    }
 
-        val uptimeSec = SystemClock.elapsedRealtime() / 1000
-        val hours = uptimeSec / 3600
-        val mins = (uptimeSec % 3600) / 60
-        val uptimeFormatted = "${hours}j ${mins}m"
-
-        return SystemStats(
-            cpuCores = cores,
-            architecture = arch,
-            deviceModel = model,
-            androidVersion = androidVer,
-            oneUiVersion = oneUi,
-            uptimeFormatted = uptimeFormatted
-        )
+    private fun readSysfsInt(path: String): String.() -> Int = { toIntOrNull() ?: 0 }
+    private fun readSysfsInt(path: String): Int {
+        val str = readSysfsString(path)
+        return str.toIntOrNull() ?: 0
     }
 
     private fun formatBytes(bytes: Long): String {
