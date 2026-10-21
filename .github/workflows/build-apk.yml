@@ -44,13 +44,13 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release create v1.0.0 release-apk/OneUI9-Resource-Monitor.apk \
-          --title "Galaxy One UI 9 Resource Monitor v1.0.0" \
-          --notes "### Galaxy One UI 9 Native Resource & Hardware Monitor
+        gh release create v1.1.0 release-apk/OneUI9-Resource-Monitor.apk \
+          --title "Galaxy One UI 9 Resource Monitor & Task Manager v1.1.0" \
+          --notes "### Galaxy One UI 9 Native Resource Monitor & Task Manager v1.1.0
           
-          - **Thermal & Battery**: Real-time decimal temperature (°C), live current (mA), voltage, health.
-          - **RAM**: Memory usage & available space.
-          - **Storage**: Internal storage stats.
-          - **SoC & System**: Android 17 & One UI 9 specs.
+          - **New Feature: PC-Style Task Manager**: View currently active processes and running apps.
+          - **Process Management**: Tap any process to view memory usage or Force Stop.
+          - **Real-time Filter & Search**: Search active apps by name or package.
+          - **Hardware Dashboard**: Live decimal battery temp (°C), mA current, RAM, and Storage.
           - **Pure Native**: 100% Free, Zero Ads, Zero Background Drain." \
           --target main || true
