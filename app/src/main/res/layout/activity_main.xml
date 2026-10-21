@@ -54,7 +54,6 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRefresh"
-                    style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
@@ -459,7 +458,6 @@
             <!-- Bottom Action: Quick Clean RAM Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCleanMemory"
-                style="@style/Widget.Material3.Button.FilledButton"
                 android:layout_width="match_parent"
                 android:layout_height="54dp"
                 android:backgroundTint="@color/accent_blue"
