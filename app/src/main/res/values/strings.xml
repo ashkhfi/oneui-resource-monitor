@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Galaxy Resource Monitor</string>
+    <string name="dashboard_subtitle">One UI 9 Native Monitor</string>
+    <string name="thermal_battery_title">Baterai &amp; Suhu</string>
+    <string name="memory_title">Memori RAM</string>
+    <string name="storage_title">Penyimpanan Internal</string>
+    <string name="system_title">Spesifikasi Sistem</string>
+    <string name="refresh_btn">Segarkan Data</string>
+    <string name="clean_ram_btn">Bersihkan RAM</string>
+</resources>

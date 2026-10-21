@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_dark">#0C0D12</color>
+    <color name="card_bg">#181A24</color>
+    <color name="card_stroke">#272A3A</color>
+    <color name="accent_blue">#3B82F6</color>
+    <color name="accent_indigo">#6366F1</color>
+    <color name="temp_cool">#10B981</color>
+    <color name="temp_warm">#F59E0B</color>
+    <color name="temp_hot">#EF4444</color>
+    <color name="text_primary">#F8FAFC</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="text_muted">#64748B</color>
+    <color name="progress_bg">#1E2230</color>
+    <color name="white">#FFFFFF</color>
+</resources>
