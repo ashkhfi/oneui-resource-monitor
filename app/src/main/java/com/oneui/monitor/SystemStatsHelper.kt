@@ -273,7 +273,6 @@ object SystemStatsHelper {
         }
     }
 
-    private fun readSysfsInt(path: String): String.() -> Int = { toIntOrNull() ?: 0 }
     private fun readSysfsInt(path: String): Int {
         val str = readSysfsString(path)
         return str.toIntOrNull() ?: 0
